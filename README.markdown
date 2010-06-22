@@ -67,9 +67,15 @@ sfLESSPlugin can use 2 workflows to manage your *.less files:
 
 ### Compile on browser side ###
 
-This is default plugin behaviour. In this behaviour, all stylesheets, added in your `view.yml` configs, that ends with `.less`:
+This is default plugin behaviour. In this behaviour, all stylesheets ending with `.less`, added:
 
-	stylesheets:      [header/main.less]
+* in your `view.yml` configs:
+
+	`stylesheets:      [header/main.less]`
+  
+* in a template view file (**warning: this does not work when used inside a layout file**):
+
+	`<?php use_stylesheet('header/main.less') ?>`  
 
 In this case, it will be automatically changed from something like
 
@@ -91,10 +97,7 @@ In details, sfLESSPlugin server side compiler does the following:
 * Ignores partials (prefixed with underscore: `_partial.less`) - these can be included with `@import` in your LESS files
 * Saves the resulting CSS files to `web/css` using the same directory structure as `web/less`
 
-You have to install 2 packages:
-
-1. `node.js`;
-2. `less.js`.
+You have to install `lessc` the less compiler: `gem install less`
 
 After that, enable server behavior & disable browser behavior in `app.yml`:
 
