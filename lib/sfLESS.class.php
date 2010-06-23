@@ -390,6 +390,9 @@ class sfLESS
     // Setting current file. We will output this var if compiler throws error
     $this->currentFile = $lessFile;
 
+    // Do not try to change the permission of an existing file which we might not own
+    $setPermission = !is_file($cssFile);
+
     // Call compiler
     $buffer = $this->callLesscCompiler($lessFile, $cssFile);
 
@@ -407,6 +410,12 @@ class sfLESS
 
     // Add compiler header to CSS & writes it to file
     file_put_contents($cssFile, self::getCssHeader() . "\n\n" . $buffer);
+
+    if ($setPermission)
+    {
+      // Set permissions for fresh files only
+      chmod($cssFile, 0666);
+    }
 
     // Setting current file to null
     $this->currentFile = null;
@@ -427,8 +436,6 @@ class sfLESS
     // Compile with lessc
     $fs = new sfFilesystem;
     $command = sprintf('lessc "%s" "%s"', $lessFile, $cssFile);
-    // Do not try to change the permission of an existing file which we might not own
-    $setPermission = !is_file($cssFile);
 
     if ('1.3.0' <= SYMFONY_VERSION)
     {
@@ -444,12 +451,6 @@ class sfLESS
     else
     {
       $fs->sh($command);
-    }
-
-    if ($setPermission)
-    {
-      // Set permissions for fresh files only
-      chmod($cssFile, 0666);
     }
 
     return file_get_contents($cssFile);
