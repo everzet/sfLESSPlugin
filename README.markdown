@@ -71,11 +71,11 @@ This is default plugin behaviour. In this behaviour, all stylesheets ending with
 
 * in your `view.yml` configs:
 
-	`stylesheets:      [header/main.less]`
+		stylesheets:      [header/main.less]
   
 * in a template view file (**warning: this does not work when used inside a layout file**):
 
-	`<?php use_stylesheet('header/main.less') ?>`  
+		<?php use_stylesheet('header/main.less') ?>
 
 In this case, it will be automatically changed from something like
 
