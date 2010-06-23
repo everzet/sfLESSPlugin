@@ -159,5 +159,6 @@ If you want to compile specific file, not all, just use argument & file name wit
 ## Contributors ##
 
 * everzet (lead): [http://github.com/everzet](http://github.com/everzet)
+* vicb (contributor): [http://github.com/vicb](http://github.com/vicb)
 
 less.js is maintained by Alexis Sellier [http://github.com/cloudhead](http://github.com/cloudhead)
