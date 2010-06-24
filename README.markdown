@@ -65,7 +65,7 @@ sfLESSPlugin can use 2 workflows to manage your *.less files:
 1. Compile on browser side by `less.js`;
 2. Compile on server side by `lessc`.
 
-## Update your layout files ##
+### Update your layout files ###
 
 Update your layout php files (at least the ones using less stylesheets):
 
@@ -107,7 +107,10 @@ In details, sfLESSPlugin server side compiler does the following:
 * Ignores partials (prefixed with underscore: `_partial.less`) - these can be included with `@import` in your LESS files
 * Saves the resulting CSS files to `web/css` using the same directory structure as `web/less`
 
-You have to install `lessc` the less compiler: `gem install less`
+You have to install 2 packages:
+
+1. `node.js`;
+2. `less.js`.
 
 After that, enable server behavior & disable browser behavior in `app.yml`:
 
