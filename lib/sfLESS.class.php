@@ -344,10 +344,8 @@ class sfLESS
     // If we check dates - recompile only really old CSS
     if ($this->isCheckDates())
     {
-      if (!is_file($cssFile) || filemtime($lessFile) > filemtime($cssFile))
-      {
-        $isCompiled = $this->callCompiler($lessFile, $cssFile);
-      }
+      $isCompiled = $this->checkDatesAndDependencies($lessFile,
+        sfConfig::get('app_sf_less_plugin_check_dependencies', false));
     }
     else
     {
@@ -363,6 +361,87 @@ class sfLESS
     );
 
     return $isCompiled;
+  }
+
+  /**
+   * Compiles the files only if the target file (.css) is older than the source file (.less),
+   * or optionally older than any of the dependecies.
+   *
+   * @param string $lessFile The source file
+   * @param boolean $checkDeps Wether the dependencies should be taken into account
+   * @return boolean Wheter the file has been compiled
+   */
+  protected function checkDatesAndDependencies($lessFile, $checkDeps)
+  {
+    // The files we depend on
+    $deps = array();
+    $mtime = filemtime($lessFile);
+
+    // Gets CSS file path
+    $cssFile = self::getCssPathOfLess($lessFile);
+
+    if (!is_file($cssFile))
+    {
+      // Always call the compiler when the target does not exist
+      return $this->callCompiler($lessFile, $cssFile);
+    }
+    else
+    {
+      if ($checkDeps)
+      {
+        // Compute the less file dependencies and the date of the last modified file
+        $deps = $this->computeDependencies($lessFile, $deps);
+        foreach ($deps as $file)
+        {
+          if (is_file($file))
+          {
+            $mtime = max($mtime, filemtime($file));
+          }
+        }
+      }
+      // Compile the file if the modification date occurs after the target file date
+      if ($mtime > filemtime($cssFile))
+      {
+        return $this->callCompiler($lessFile, $cssFile);
+      }
+      else
+      {
+        return false;
+      }
+    }
+  }
+
+  /**
+   * Compute the dependencies of the file
+   *
+   * @param file $lessFile A less file
+   * @param array $deps An array of pre-existing dependencies
+   * @return array The updated array of dependencies
+   */
+  protected function computeDependencies($lessFile, array $deps)
+  {
+    $less = file_get_contents($lessFile);
+
+    if (preg_match_all("/s*@import\s+(['\"])(.*?)\\1\s*;/", $less, $files))
+    {
+      foreach ($files[2] as $file)
+      {
+        // Append the .less extension when omitted
+        if (strpos('.', $file) === false)
+        {
+          $file .= '.less';
+        }
+        // Compute the canonical path
+        $file = realpath(dirname($lessFile) . '/' . $file);
+        if (!in_array($file, $deps))
+        {
+          $deps[] = $file;
+          // Recursively add dependencies
+          $deps = array_merge($deps, $this->computeDependencies($file, $deps));
+        }
+      }
+    }
+    return $deps;
   }
 
   /**
