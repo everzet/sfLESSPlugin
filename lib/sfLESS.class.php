@@ -422,7 +422,7 @@ class sfLESS
   {
     $less = file_get_contents($lessFile);
 
-    if (preg_match_all("/s*@import\s+(['\"])(.*?)\\1\s*;/", $less, $files))
+    if (preg_match_all("/\s*@import\s+(['\"])(.*?)\\1\s*;/", $less, $files))
     {
       foreach ($files[2] as $file)
       {
@@ -433,7 +433,7 @@ class sfLESS
         }
         // Compute the canonical path
         $file = realpath(dirname($lessFile) . '/' . $file);
-        if (!in_array($file, $deps))
+        if (is_file($file) && !in_array($file, $deps))
         {
           $deps[] = $file;
           // Recursively add dependencies
