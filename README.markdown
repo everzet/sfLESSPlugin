@@ -65,6 +65,16 @@ sfLESSPlugin can use 2 workflows to manage your *.less files:
 1. Compile on browser side by `less.js`;
 2. Compile on server side by `lessc`.
 
+## Update your layout files ##
+
+Update your layout php files (at least the ones using less stylesheets):
+
+* include the less css helper:
+
+		<?php use_helper('LessCss'); ?>
+
+* update the way stylesheets are included by changing `<?php include_stylesheets() ?>` for `<?php include_less_stylesheets() ?>`
+
 ### Compile on browser side ###
 
 This is default plugin behaviour. In this behaviour, all stylesheets ending with `.less`, added:
@@ -73,7 +83,7 @@ This is default plugin behaviour. In this behaviour, all stylesheets ending with
 
 		stylesheets:      [header/main.less]
   
-* in a template view file (**warning: this does not work when used inside a layout file**):
+* in a template view file:
 
 		<?php use_stylesheet('header/main.less') ?>
 

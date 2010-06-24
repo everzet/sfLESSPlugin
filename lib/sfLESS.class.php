@@ -260,16 +260,13 @@ class sfLESS
   }
 
   /**
-   * Listens to template.filter_parameters & finds *.less links to fix it's rel & add less.js
+   * Update the response by fixing less stylesheet path and adding the less js engine when required
    *
-   * @param   sfEvent $event  an sfEvent instance
-   * @param   string  $data   event data
-   * 
-   * @return  string          event data
+   * @param   sfWebResponse $response The response that will be sent back to the browser
+   * @param   boolean       $useJs    Wether the less stylesheets should be processed by the js on the client side
    */
-  static public function findAndFixContentLinks(sfEvent $event, $data)
+  static public function findAndFixContentLinks(sfWebResponse $response, $useJs)
   {
-    $response = sfContext::getInstance()->getResponse();
     $hasLess  = false;
 
     foreach ($response->getStylesheets() as $file => $options)
@@ -277,10 +274,15 @@ class sfLESS
       if ('.less' === substr($file, -5) && (!isset($options['rel']) || 'stylesheet/less' !== $options['rel']))
       {
         $response->removeStylesheet($file);
-        $response->addStylesheet('/less/' . $file, '', array_merge(
-          $options, array('rel' => 'stylesheet/less')
-        ));
+        if ($useJs)
+        {
+          $response->addStylesheet('/less/' . $file, '', array_merge($options, array('rel' => 'stylesheet/less')));
         $hasLess = true;
+        }
+        else
+        {
+          $response->addStylesheet('/css/' . substr($file, 0, -5) . '.css', '', $options);
+        }
       }
     }
 
@@ -290,8 +292,6 @@ class sfLESS
         sfConfig::get('app_sf_less_plugin_js_lib', '/sfLESSPlugin/js/less-1.0.21.min.js')
       );
     }
-
-    return $data;
   }
 
   /**

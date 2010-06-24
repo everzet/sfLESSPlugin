@@ -23,16 +23,6 @@ class sfLESSPluginConfiguration extends sfPluginConfiguration
    */
   public function initialize()
   {
-    // If sf_less_plugin_js in app.yml is set to true (by default)
-    if (sfConfig::get('app_sf_less_plugin_use_js', true))
-    {
-      // Register listener to response.filter_content event
-      $this->dispatcher->connect(
-        'template.filter_parameters',
-        array('sfLESS', 'findAndFixContentLinks')
-      );
-    }
-
     // If sf_less_plugin_compile in app.yml is set to true
     if (sfConfig::get('app_sf_less_plugin_compile', false))
     {
