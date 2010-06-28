@@ -19,6 +19,17 @@
 class sfWebDebugPanelLESS extends sfWebDebugPanel
 {
   /**
+   * Some files have been compiled
+   */
+  protected $compiled = false;
+
+
+  /**
+   * Some errors where triggered during the compilation
+   */
+  protected $errors = false;
+
+  /**
    * Listens to LoadDebugWebPanel event & adds this panel to the Web Debug toolbar
    *
    * @param   sfEvent $event
@@ -60,6 +71,8 @@ class sfWebDebugPanelLESS extends sfWebDebugPanel
       $panel .= $this->getInfoContent($info);
     }
     $panel .= '</table>';
+
+    $this->setStatus($this->errors?sfLogger::ERR:($this->compiled?sfLogger::WARNING:sfLogger::INFO));
 
     return $panel;
   }
@@ -108,11 +121,12 @@ EOF
     // Checking compile & error statuses
     if ($info['isCompiled'])
     {
+      $this->compiled = true;
       $trStyle = 'background-color:#a1d18d;';
     }
     elseif ($info['error'])
     {
-      $this->setStatus(sfLogger::ERR);
+      $this->errors = true;
       $trStyle = 'background-color:#f18c89;';
       $fileLink .= ' ' . $this->getToggler('less_error_' . $errorId, 'Toggle error info');
     }
