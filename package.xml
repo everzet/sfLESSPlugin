@@ -84,6 +84,7 @@
      * added an helper to include less stylesheets in layouts / templates
      * [client side] less javascript updated to version 1.0.30
      * [server side] added a visual feedback when some files have been compiled
+     * [server side] added an optional dependency check
    </notes>
   </release>
 
