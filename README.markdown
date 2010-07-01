@@ -186,3 +186,11 @@ If you want to compile specific file, not all, just use argument & file name wit
 * vicb (contributor): [http://github.com/vicb](http://github.com/vicb)
 
 less.js is maintained by Alexis Sellier [http://github.com/cloudhead](http://github.com/cloudhead)
+
+## History ##
+
+### v1.1.0 2010-07-01 ###
+
+* added an helper to include less stylesheets in layouts / templates
+* [client side] less javascript updated to version 1.0.30
+* [server side] added a visual feedback in the debug bar when some files have been compiled

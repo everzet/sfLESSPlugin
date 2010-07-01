@@ -10,9 +10,9 @@
   <email>ever.zet@gmail.com</email>
   <active>yes</active>
  </lead>
- <date>2010-06-23</date>
+ <date>2010-07-01</date>
  <version>
-  <release>1.0.1</release>
+  <release>1.1.0</release>
   <api>1.0.0</api>
  </version>
  <stability>
@@ -23,14 +23,14 @@
  <notes>-</notes>
  <contents>
   <dir name="/">
-   <file role="data" name="README" />
+   <file role="data" name="README.markdown" />
    <file role="data" name="LICENSE" />
    <dir name="web">
      <dir name="images">
        <file role="data" name="css_go.png" />
      </dir>
      <dir name="js">
-       <file role="data" name="less-1.0.21.min.js" />
+       <file role="data" name="less-1.0.30.min.js" />
      </dir>
    </dir>
    <dir name="config">
@@ -41,6 +41,9 @@
     <file role="data" name="sfWebDebugPanelLESS.class.php" />
     <dir name="task">
      <file role="data" name="lessCompileTask.class.php" />
+    </dir>
+    <dir name="helper">
+      <file role="data" name="LessCssHelper.php" />
     </dir>
    </dir>
   </dir>
@@ -64,6 +67,25 @@
  </dependencies>
  <phprelease />
  <changelog>
+
+  <release>
+   <version>
+     <release>1.1.0</release>
+     <api>1.0.0</api>
+   </version>
+   <stability>
+     <release>stable</release>
+     <api>stable</api>
+   </stability>
+   <license uri="http://www.symfony-project.org/license">MIT license</license>
+   <date>2010-07-01</date>
+   <license>MIT</license>
+   <notes>
+     * added an helper to include less stylesheets in layouts / templates
+     * [client side] less javascript updated to version 1.0.30
+     * [server side] added a visual feedback when some files have been compiled
+   </notes>
+  </release>
 
   <release>
    <version>
