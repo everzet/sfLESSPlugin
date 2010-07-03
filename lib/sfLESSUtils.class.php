@@ -40,4 +40,13 @@ class sfLESSUtils
     }
     return false;
   }
+
+  public static function stripLessComments($less)
+  {
+    // strip /* */ style comments
+    $less = preg_replace('#/\*.*?\*/#ms', '', $less);
+    // stip // style comments
+    $less = preg_replace('#//.*$#m', '', $less);
+    return $less;
+  }
 }

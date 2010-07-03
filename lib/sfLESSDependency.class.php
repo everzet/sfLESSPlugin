@@ -51,7 +51,7 @@ class sfLESSDependency
 
     if (is_file($lessFile))
     {
-      $less = file_get_contents($lessFile);
+      $less = sfLESSUtils::stripLessComments(file_get_contents($lessFile));
       if (preg_match_all("/\s*@import\s+(['\"])(.*?)\\1\s*;/", $less, $files))
       {
         foreach ($files[2] as $file)
