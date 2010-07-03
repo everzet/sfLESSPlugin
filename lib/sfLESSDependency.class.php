@@ -31,7 +31,7 @@ class sfLESSDependency
     }
     else
     {
-      $this->path = $path;
+      $this->path = preg_replace('/\/$/', '', $path);
     }
   }
 
@@ -46,7 +46,7 @@ class sfLESSDependency
   {
     if (!sfLESSUtils::isPathAbsolute($lessFile))
     {
-      $lessFile = realpath($this->path + $lessFile);
+      $lessFile = realpath($this->path . '/' . $lessFile);
     }
 
     if (is_file($lessFile))
@@ -62,7 +62,14 @@ class sfLESSDependency
             $file .= '.less';
           }
           // Compute the canonical path
-          $file = realpath(dirname($lessFile) . '/' . $file);
+          if (sfLESSUtils::isPathAbsolute($file))
+          {
+            $file = realpath($this->path . $file);
+          }
+          else
+          {
+            $file = realpath(dirname($lessFile) . '/' . $file);
+          }
           if ($file !== false && !in_array($file, $deps))
           {
             $deps[] = $file;

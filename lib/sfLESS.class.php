@@ -390,7 +390,7 @@ class sfLESS
       if ($checkDeps)
       {
         // Compute the less file dependencies and the date of the last modified file
-        $d = new sfLESSDependency(self::getLessPaths());
+        $d = new sfLESSDependency(sfConfig::get('sf_web_dir'));
         $deps = $d->computeDependencies($lessFile, $deps);
         foreach ($deps as $file)
         {
