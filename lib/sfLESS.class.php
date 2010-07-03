@@ -390,7 +390,8 @@ class sfLESS
       if ($checkDeps)
       {
         // Compute the less file dependencies and the date of the last modified file
-        $deps = $this->computeDependencies($lessFile, $deps);
+        $d = new sfLESSDependency(self::getLessPaths());
+        $deps = $d->computeDependencies($lessFile, $deps);
         foreach ($deps as $file)
         {
           if (is_file($file))
@@ -409,39 +410,6 @@ class sfLESS
         return false;
       }
     }
-  }
-
-  /**
-   * Compute the dependencies of the file
-   *
-   * @param file $lessFile A less file
-   * @param array $deps An array of pre-existing dependencies
-   * @return array The updated array of dependencies
-   */
-  protected function computeDependencies($lessFile, array $deps)
-  {
-    $less = file_get_contents($lessFile);
-
-    if (preg_match_all("/\s*@import\s+(['\"])(.*?)\\1\s*;/", $less, $files))
-    {
-      foreach ($files[2] as $file)
-      {
-        // Append the .less extension when omitted
-        if (strpos('.', $file) === false)
-        {
-          $file .= '.less';
-        }
-        // Compute the canonical path
-        $file = realpath(dirname($lessFile) . '/' . $file);
-        if (is_file($file) && !in_array($file, $deps))
-        {
-          $deps[] = $file;
-          // Recursively add dependencies
-          $deps = array_merge($deps, $this->computeDependencies($file, $deps));
-        }
-      }
-    }
-    return $deps;
   }
 
   /**
