@@ -57,7 +57,7 @@ class sfLESSDependency
         foreach ($files[2] as $file)
         {
           // Append the .less extension when omitted
-          if (strpos('.', $file) === false)
+          if (!preg_match('/\.(le?|c)ss$/', $file))
           {
             $file .= '.less';
           }
