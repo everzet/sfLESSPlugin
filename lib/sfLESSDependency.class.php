@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of the sfLESSPlugin.
  * (c) 2010 Konstantin Kudryashov <ever.zet@gmail.com>
@@ -19,11 +18,20 @@
 class sfLESSDependency
 {
   /**
-   * Base path
+   * @var string $path The base path
    */
   protected $path;
 
-  public function __construct($path)
+  /**
+   * @var boolean $check Wether to check for dependency
+   */
+  protected $check = false;
+
+  /**
+   * @param string $path Base path (web root folder)
+   * @param boolean $check Whether to check for dependency
+   */
+  public function __construct($path, $check)
   {
     if (!sfLESSUtils::isPathAbsolute($path) || !is_dir($path))
     {
@@ -33,8 +41,34 @@ class sfLESSDependency
     {
       $this->path = preg_replace('/\/$/', '', $path);
     }
+    $this->check = $check;
   }
 
+  /**
+   * Return the modification time of the file (optionally including its dependency)
+   *
+   * @param string $file Filename
+   * @return integer|false The time the files was last modified (unix timestamp)
+   */
+  public function getMtime($lessFile)
+  {
+    $mtime = filemtime($lessFile);
+
+    if ($mtime !== false && $this->check)
+    {
+      $deps = $this->computeDependencies($lessFile, array());
+      foreach ($deps as $file)
+      {
+        if (is_file($file))
+        {
+          $mtime = max($mtime, filemtime($file));
+        }
+      }
+    }
+
+    return $mtime;
+  }
+ 
   /**
    * Compute the dependencies of the file
    *
@@ -42,7 +76,7 @@ class sfLESSDependency
    * @param array $deps An array of pre-existing dependencies
    * @return array The updated array of dependencies
    */
-  public function computeDependencies($lessFile, array $deps)
+  protected function computeDependencies($lessFile, array $deps)
   {
     if (!sfLESSUtils::isPathAbsolute($lessFile))
     {
@@ -52,11 +86,11 @@ class sfLESSDependency
     if (is_file($lessFile))
     {
       $less = sfLESSUtils::stripLessComments(file_get_contents($lessFile));
-      if (preg_match_all("/\s*@import\s+(['\"])(.*?)\\1\s*;/", $less, $files))
+      if (preg_match_all("/@import\s+(?:url\s*\(\s*)?(['\"])(.*?)\\1\s*(?:\))?\s*;/", $less, $files))
       {
         foreach ($files[2] as $file)
         {
-          // Append the .less extension when omitted
+          // Append the .less when the extension is omitted
           if (!preg_match('/\.(le?|c)ss$/', $file))
           {
             $file .= '.less';
@@ -70,11 +104,11 @@ class sfLESSDependency
           {
             $file = realpath(dirname($lessFile) . '/' . $file);
           }
-          if ($file !== false && !in_array($file, $deps))
+          if ($file !== false && !in_array($file, $deps) && !preg_match('/\.css$/', $file))
           {
             $deps[] = $file;
             // Recursively add dependencies
-            $deps = array_merge($deps, $this->computeDependencies($file, $deps));
+            $deps += $this->computeDependencies($file, $deps);
           }
         }
       }

@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of the sfLESSPlugin.
  * (c) 2010 Konstantin Kudryashov <ever.zet@gmail.com>
@@ -16,7 +15,6 @@
  * @author     Victor Berchet <victor@suumit.com>
  * @version    1.0.0
  */
-
 
 class sfLESSUtils
 {
@@ -41,6 +39,12 @@ class sfLESSUtils
     return false;
   }
 
+  /**
+   * Strip comments from less content
+   * 
+   * @param string $less LESS code
+   * @return string LESS code without comments
+   */
   public static function stripLessComments($less)
   {
     // strip /* */ style comments

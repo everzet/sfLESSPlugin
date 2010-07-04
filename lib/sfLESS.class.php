@@ -344,8 +344,19 @@ class sfLESS
     // If we check dates - recompile only really old CSS
     if ($this->isCheckDates())
     {
-      $isCompiled = $this->checkDatesAndDependencies($lessFile,
-        sfConfig::get('app_sf_less_plugin_check_dependencies', false));
+      try
+      {
+        $d = new sfLESSDependency(sfConfig::get('sf_web_dir'),
+          sfConfig::get('app_sf_less_plugin_check_dependencies', false));
+        if (!is_file($cssFile) || $d->getMtime($lessFile) > filemtime($cssFile))
+        {
+          $isCompiled = $this->callCompiler($lessFile, $cssFile);
+        }
+      }
+      catch (Exception $e)
+      {
+        $isCompiled = false;
+      }
     }
     else
     {
@@ -361,55 +372,6 @@ class sfLESS
     );
 
     return $isCompiled;
-  }
-
-  /**
-   * Compiles the files only if the target file (.css) is older than the source file (.less),
-   * or optionally older than any of the dependecies.
-   *
-   * @param string $lessFile The source file
-   * @param boolean $checkDeps Wether the dependencies should be taken into account
-   * @return boolean Wheter the file has been compiled
-   */
-  protected function checkDatesAndDependencies($lessFile, $checkDeps)
-  {
-    // The files we depend on
-    $deps = array();
-    $mtime = filemtime($lessFile);
-
-    // Gets CSS file path
-    $cssFile = self::getCssPathOfLess($lessFile);
-
-    if (!is_file($cssFile))
-    {
-      // Always call the compiler when the target does not exist
-      return $this->callCompiler($lessFile, $cssFile);
-    }
-    else
-    {
-      if ($checkDeps)
-      {
-        // Compute the less file dependencies and the date of the last modified file
-        $d = new sfLESSDependency(sfConfig::get('sf_web_dir'));
-        $deps = $d->computeDependencies($lessFile, $deps);
-        foreach ($deps as $file)
-        {
-          if (is_file($file))
-          {
-            $mtime = max($mtime, filemtime($file));
-          }
-        }
-      }
-      // Compile the file if the modification date occurs after the target file date
-      if ($mtime > filemtime($cssFile))
-      {
-        return $this->callCompiler($lessFile, $cssFile);
-      }
-      else
-      {
-        return false;
-      }
-    }
   }
 
   /**
