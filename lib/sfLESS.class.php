@@ -288,9 +288,16 @@ class sfLESS
 
     if ($hasLess)
     {
-      $response->addJavascript(
-        sfConfig::get('app_sf_less_plugin_js_lib', '/sfLESSPlugin/js/less-1.0.30.min.js')
-      );
+      if (sfConfig::get('symfony.asset.javascripts_included', false))
+      {
+        throw new LogicException("The stylesheets must be included before the javascript in your layout");
+      }
+      else
+      {
+        $response->addJavascript(
+          sfConfig::get('app_sf_less_plugin_js_lib', '/sfLESSPlugin/js/less-1.0.30.min.js')
+        );
+      }
     }
   }
 
