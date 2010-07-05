@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the sfLESSPlugin.
  * (c) 2010 Konstantin Kudryashov <ever.zet@gmail.com>
@@ -12,6 +13,7 @@
  *
  * @package    sfLESSPlugin
  * @subpackage lib
+ * @author     Victor Berchet <victor@suumit.com>
  * @author     Victor Berchet <victor@suumit.com>
  * @version    1.0.0
  */
@@ -52,5 +54,33 @@ class sfLESSUtils
     // stip // style comments
     $less = preg_replace('#//.*$#m', '', $less);
     return $less;
+  }
+
+  /**
+   * Returns path with changed directory separators to unix-style (\ => /)
+   *
+   * @param   string  $path basic path
+   * 
+   * @return  string        unix-style path
+   */
+  public static function getSepFixedPath($path)
+  {
+    return str_replace(DIRECTORY_SEPARATOR, '/', $path);
+  }
+
+  /**
+   * Returns relative path from the project root dir
+   *
+   * @param   string  $fullPath full path to file
+   * 
+   * @return  string            relative path from the project root
+   */
+  public static function getProjectRelativePath($fullPath)
+  {
+    return str_replace(
+      self::getSepFixedPath(sfConfig::get('sf_root_dir')) . '/',
+      '',
+      self::getSepFixedPath($fullPath)
+    );
   }
 }

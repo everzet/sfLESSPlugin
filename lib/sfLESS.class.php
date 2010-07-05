@@ -101,34 +101,6 @@ class sfLESS
   }
 
   /**
-   * Returns path with changed directory separators to unix-style (\ => /)
-   *
-   * @param   string  $path basic path
-   * 
-   * @return  string        unix-style path
-   */
-  public static function getSepFixedPath($path)
-  {
-    return str_replace(DIRECTORY_SEPARATOR, '/', $path);
-  }
-
-  /**
-   * Returns relative path from the project root dir
-   *
-   * @param   string  $fullPath full path to file
-   * 
-   * @return  string            relative path from the project root
-   */
-  public static function getProjectRelativePath($fullPath)
-  {
-    return str_replace(
-      self::getSepFixedPath(sfConfig::get('sf_root_dir')) . '/',
-      '',
-      self::getSepFixedPath($fullPath)
-    );
-  }
-
-  /**
    * Do we need to check dates before compile
    *
    * @return  boolean
@@ -175,7 +147,7 @@ class sfLESS
    */
   static public function getCssPaths()
   {  
-    return self::getSepFixedPath(sfConfig::get('sf_web_dir')) . '/css/';
+    return sfLESSUtils::getSepFixedPath(sfConfig::get('sf_web_dir')) . '/css/';
   }
 
   /**
@@ -226,7 +198,7 @@ class sfLESS
    */
   static public function getLessPaths()
   {
-    return self::getSepFixedPath(sfConfig::get('sf_web_dir')) . '/less/';
+    return sfLESSUtils::getSepFixedPath(sfConfig::get('sf_web_dir')) . '/less/';
   }
 
   /**
@@ -271,13 +243,16 @@ class sfLESS
 
     foreach ($response->getStylesheets() as $file => $options)
     {
-      if ('.less' === substr($file, -5) && (!isset($options['rel']) || 'stylesheet/less' !== $options['rel']))
+      if (
+           '.less' === substr($file, -5) && 
+           (!isset($options['rel']) || 'stylesheet/less' !== $options['rel'])
+         )
       {
         $response->removeStylesheet($file);
         if ($useJs)
         {
           $response->addStylesheet('/less/' . $file, '', array_merge($options, array('rel' => 'stylesheet/less')));
-        $hasLess = true;
+          $hasLess = true;
         }
         else
         {
@@ -290,7 +265,7 @@ class sfLESS
     {
       if (sfConfig::get('symfony.asset.javascripts_included', false))
       {
-        throw new LogicException("The stylesheets must be included before the javascript in your layout");
+        throw new LogicException("The stylesheets must be included before the javascript in your layout (less.js requirement)");
       }
       else
       {
