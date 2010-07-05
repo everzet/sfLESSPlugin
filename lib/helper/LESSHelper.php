@@ -31,19 +31,12 @@ use_helper('Asset');
 function get_less_stylesheets()
 {
   $response = sfContext::getInstance()->getResponse();
-  sfConfig::set('symfony.asset.stylesheets_included', true);
 
   sfLESSListeners::findAndFixContentLinks(
     $response, sfConfig::get('app_sf_less_plugin_use_js', false)
   );
 
-  $html = '';
-  foreach ($response->getStylesheets() as $file => $options)
-  {
-    $html .= stylesheet_tag($file, $options);
-  }
-
-  return $html;
+  return get_stylesheets();
 }
 
 /**
