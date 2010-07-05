@@ -14,7 +14,7 @@
  * @package    sfLESSPlugin
  * @subpackage lib
  * @author     Victor Berchet <victor@suumit.com>
- * @author     Victor Berchet <victor@suumit.com>
+ * @author     Konstantin Kudryashov <ever.zet@gmail.com>
  * @version    1.0.0
  */
 
@@ -44,8 +44,9 @@ class sfLESSUtils
   /**
    * Strip comments from less content
    * 
-   * @param string $less LESS code
-   * @return string LESS code without comments
+   * @param   string  $less LESS code
+   * 
+   * @return  string        LESS code without comments
    */
   public static function stripLessComments($less)
   {
@@ -82,5 +83,45 @@ class sfLESSUtils
       '',
       self::getSepFixedPath($fullPath)
     );
+  }
+
+  /**
+   * Checks if CSS file was compiled from LESS
+   *
+   * @param   string  $dir    a path to file
+   * @param   string  $entry  a filename
+   * 
+   * @return  boolean
+   */
+  static public function isCssLessCompiled($dir, $entry)
+  {
+    $file = $dir . '/' . $entry;
+    $fp = fopen( $file, 'r' );
+    $line = stream_get_line($fp, 1024, "\n");
+    fclose($fp);
+
+    return (0 === strcmp($line, self::getCssHeader()));
+  }
+
+  /**
+   * Compress CSS by removing whitespaces, tabs, newlines, etc.
+   *
+   * @param   string  $css  CSS to be compressed
+   * 
+   * @return  string        compressed CSS
+   */
+  static public function getCompressedCss($css)
+  {
+    return str_replace(array("\r\n", "\r", "\n", "\t", '  ', '    ', '    '), '', $css);
+  }
+
+  /**
+   * Returns header text for CSS files
+   *
+   * @return  string  a header text for CSS files
+   */
+  static public function getCssHeader()
+  {
+    return '/* This CSS is autocompiled by LESS parser. Don\'t edit it manually. */';
   }
 }

@@ -22,29 +22,15 @@ class sfLESS
    * Array of LESS styles
    *
    * @var array
-   **/
+   */
   protected static $results = array();
 
   /**
    * Errors of compiler
    *
    * @var array
-   **/
+   */
   protected static $errors  = array();
-
-  /**
-   * Do we need to check dates before compile
-   *
-   * @var boolean
-   */
-  protected $checkDates     = true;
-
-  /**
-   * Do we need compression for CSS files
-   *
-   * @var boolean
-   */
-  protected $useCompression = false;
 
   /**
    * Current LESS file to be parsed. This var used to help output errors in callCompiler()
@@ -54,15 +40,30 @@ class sfLESS
   protected $currentFile;
 
   /**
+   * LESS configuration manager
+   *
+   * @var LESSConfig
+   */
+  protected $config;
+
+  /**
    * Constructor
    *
-   * @param   boolean $checkDates     Do we need to check dates before compile
-   * @param   boolean $useCompression Do we need compression for CSS files
+   * @param   LESSConfig  $config   configuration manager
    */
-  public function __construct($checkDates = true, $useCompression = false)
+  public function __construct(LESSConfig $config)
   {
-    $this->setIsCheckDates($checkDates);
-    $this->setIsUseCompression($useCompression);
+    $this->config = $config;
+  }
+
+  /**
+   * Returns configuration manager
+   *
+   * @return  LESSConfig  configurator instance
+   */
+  public function getConfig()
+  {
+    return $this->config;
   }
 
   /**
@@ -86,119 +87,16 @@ class sfLESS
   }
 
   /**
-   * Returns debug info of the current state
-   *
-   * @return  array state
-   */
-  public function getDebugInfo()
-  {
-    return array(
-      'dates'       => var_export($this->isCheckDates(), true),
-      'compress'    => var_export($this->isUseCompression(), true),
-      'less'        => $this->getLessPaths(),
-      'css'         => $this->getCssPaths()
-    );
-  }
-
-  /**
-   * Do we need to check dates before compile
-   *
-   * @return  boolean
-   */
-  public function isCheckDates()
-  {
-    return sfConfig::get('app_sf_less_plugin_check_dates', $this->checkDates);
-  }
-
-  /**
-   * Set need of check dates before compile
-   *
-   * @param   boolean $checkDates Do we need to check dates before compile
-   */
-  public function setIsCheckDates($checkDates)
-  {
-    $this->checkDates = $checkDates;
-  }
-
-  /**
-   * Do we need compression for CSS files
-   *
-   * @return  boolean
-   */
-  public function isUseCompression()
-  {
-    return sfConfig::get('app_sf_less_plugin_use_compression', $this->useCompression);
-  }
-
-  /**
-   * Set need of compression for CSS files
-   *
-   * @param   boolean $useCompression Do we need compression for CSS files
-   */
-  public function setIsUseCompression($useCompression)
-  {
-    $this->useCompression = $useCompression;
-  }
-
-  /**
-   * Returns paths to CSS files
-   *
-   * @return  string  a path to CSS files directory
-   */
-  static public function getCssPaths()
-  {  
-    return sfLESSUtils::getSepFixedPath(sfConfig::get('sf_web_dir')) . '/css/';
-  }
-
-  /**
    * Returns all CSS files under the CSS directory
    *
    * @return  array   an array of CSS files
    */
-  static public function findCssFiles()
+  public function findCssFiles()
   {
     return sfFinder::type('file')
-      ->exec(array('sfLESS', 'isCssLessCompiled'))
+      ->exec(array('sfLESSUtils', 'isCssLessCompiled'))
       ->name('*.css')
-      ->in(self::getCssPaths());
-  }
-
-  /**
-   * Returns header text for CSS files
-   *
-   * @return  string  a header text for CSS files
-   */
-  static protected function getCssHeader()
-  {
-    return '/* This CSS is autocompiled by LESS parser. Don\'t edit it manually. */';
-  }
-
-  /**
-   * Checks if CSS file was compiled from LESS
-   *
-   * @param   string  $dir    a path to file
-   * @param   string  $entry  a filename
-   * 
-   * @return  boolean
-   */
-  static public function isCssLessCompiled($dir, $entry)
-  {
-    $file = $dir . '/' . $entry;
-    $fp = fopen( $file, 'r' );
-    $line = stream_get_line($fp, 1024, "\n");
-    fclose($fp);
-
-    return (0 === strcmp($line, self::getCssHeader()));
-  }
-
-  /**
-   * Returns paths to LESS files
-   *
-   * @return  string  a path to LESS files directories
-   */
-  static public function getLessPaths()
-  {
-    return sfLESSUtils::getSepFixedPath(sfConfig::get('sf_web_dir')) . '/less/';
+      ->in($this->config->getCssPaths());
   }
 
   /**
@@ -206,13 +104,13 @@ class sfLESS
    *
    * @return  array   an array of LESS files
    */
-  static public function findLessFiles()
+  public function findLessFiles()
   {
     return sfFinder::type('file')
       ->name('*.less')
       ->discard('_*')
       ->follow_link()
-      ->in(self::getLessPaths());
+      ->in($this->config->getLessPaths());
   }
 
   /**
@@ -225,76 +123,10 @@ class sfLESS
   static public function getCssPathOfLess($lessFile)
   {
     return str_replace(
-      array(self::getLessPaths(), '.less'),
-      array(self::getCssPaths(), '.css'),
+      array($this->config->getLessPaths(), '.less'),
+      array($this->config->getCssPaths(), '.css'),
       $lessFile
     );
-  }
-
-  /**
-   * Update the response by fixing less stylesheet path and adding the less js engine when required
-   *
-   * @param   sfWebResponse $response The response that will be sent back to the browser
-   * @param   boolean       $useJs    Wether the less stylesheets should be processed by the js on the client side
-   */
-  static public function findAndFixContentLinks(sfWebResponse $response, $useJs)
-  {
-    $hasLess  = false;
-
-    foreach ($response->getStylesheets() as $file => $options)
-    {
-      if (
-           '.less' === substr($file, -5) && 
-           (!isset($options['rel']) || 'stylesheet/less' !== $options['rel'])
-         )
-      {
-        $response->removeStylesheet($file);
-        if ($useJs)
-        {
-          $response->addStylesheet('/less/' . $file, '', array_merge($options, array('rel' => 'stylesheet/less')));
-          $hasLess = true;
-        }
-        else
-        {
-          $response->addStylesheet('/css/' . substr($file, 0, -5) . '.css', '', $options);
-        }
-      }
-    }
-
-    if ($hasLess)
-    {
-      if (sfConfig::get('symfony.asset.javascripts_included', false))
-      {
-        throw new LogicException("The stylesheets must be included before the javascript in your layout (less.js requirement)");
-      }
-      else
-      {
-        $response->addJavascript(
-          sfConfig::get('app_sf_less_plugin_js_lib', '/sfLESSPlugin/js/less-1.0.30.min.js')
-        );
-      }
-    }
-  }
-
-  /**
-   * Listens to the routing.load_configuration event. Finds & compiles LESS files to CSS
-   *
-   * @param   sfEvent $event  an sfEvent instance
-   */
-  static public function findAndCompile(sfEvent $event)
-  {
-    // Start compilation timer for debug info
-    $timer = sfTimerManager::getTimer('Less compilation');
-
-    // Create new helper object & compile LESS stylesheets with it
-    $lessHelper = new self;
-    foreach (self::findLessFiles() as $lessFile)
-    {
-      $lessHelper->compile($lessFile);
-    }
-
-    // Stop timer
-    $timer->addTime();
   }
 
   /**
@@ -310,7 +142,7 @@ class sfLESS
     $timer = new sfTimer;
 
     // Gets CSS file path
-    $cssFile = self::getCssPathOfLess($lessFile);
+    $cssFile = $this->getCssPathOfLess($lessFile);
 
     // Checks if path exists & create if not
     if (!is_dir(dirname($cssFile)))
@@ -324,7 +156,7 @@ class sfLESS
     $isCompiled = false;
 
     // If we check dates - recompile only really old CSS
-    if ($this->isCheckDates())
+    if ($this->config->isCheckDates())
     {
       try
       {
@@ -357,18 +189,6 @@ class sfLESS
   }
 
   /**
-   * Compress CSS by removing whitespaces, tabs, newlines, etc.
-   *
-   * @param   string  $css  CSS to be compressed
-   * 
-   * @return  string        compressed CSS
-   */
-  static public function getCompressedCss($css)
-  {
-    return str_replace(array("\r\n", "\r", "\n", "\t", '  ', '    ', '    '), '', $css);
-  }
-
-  /**
    * Calls current LESS compiler for single file
    *
    * @param   string  $lessFile a LESS file
@@ -394,13 +214,13 @@ class sfLESS
     }
 
     // Compress CSS if we use compression
-    if ($this->isUseCompression())
+    if ($this->config->isUseCompression())
     {
-      $buffer = self::getCompressedCss($buffer);
+      $buffer = sfLESSUtils::getCompressedCss($buffer);
     }
 
     // Add compiler header to CSS & writes it to file
-    file_put_contents($cssFile, self::getCssHeader() . "\n\n" . $buffer);
+    file_put_contents($cssFile, sfLESSUtils::getCssHeader() . "\n\n" . $buffer);
 
     if ($setPermission)
     {
