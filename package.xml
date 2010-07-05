@@ -23,7 +23,7 @@
  <notes>-</notes>
  <contents>
   <dir name="/">
-   <file role="data" name="README.markdown" />
+   <file role="data" name="README" />
    <file role="data" name="LICENSE" />
    <dir name="web">
      <dir name="images">

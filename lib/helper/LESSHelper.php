@@ -14,6 +14,7 @@
  * @package    sfLESSPlugin
  * @subpackage helper
  * @author     Victor Berchet <victor@suumit.com>
+ * @author     Konstantin Kudryashov <ever.zet@gmail.com>
  * @version    1.0.0
  */
 use_helper('Asset');
@@ -32,7 +33,9 @@ function get_less_stylesheets()
   $response = sfContext::getInstance()->getResponse();
   sfConfig::set('symfony.asset.stylesheets_included', true);
 
-  sfLESS::findAndFixContentLinks($response, sfConfig::get('app_sf_less_plugin_use_js', false));
+  sfLESSListeners::findAndFixContentLinks(
+    $response, sfConfig::get('app_sf_less_plugin_use_js', false)
+  );
 
   $html = '';
   foreach ($response->getStylesheets() as $file => $options)

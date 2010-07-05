@@ -66,49 +66,57 @@ EOF;
    */
   protected function execute($arguments = array(), $options = array())
   {
+    // Inits sfLESS instance for compilation help
+    $less = new sfLESS(new sfLESSConfig(
+      false, isset($options['compress']) && $options['compress']
+    ));
+
     // Remove old CSS files if --clean option specified
     if (isset($options['clean']) && $options['clean'])
     {
-      foreach (sfLESS::findCssFiles() as $cssFile)
+      foreach ($less->findCssFiles() as $cssFile)
       {
         if (!isset($arguments['file']) || (false !== strpos($cssFile, $arguments['file'] . '.css')))
         {
           unlink($cssFile);
-          $this->logSection('removed', str_replace(sfLESS::getCssPaths(), '', $cssFile));
+          $this->logSection(
+            'removed',
+            str_replace($less->getConfig()->getCssPaths(), '', $cssFile)
+          );
         }
       }
     }
 
-    // Inits sfLESS instance for compilation help
-    $lessHelper = new sfLESS(false, isset($options['compress']) && $options['compress']);
-
     // Outputs debug info
     if (isset($options['debug']) && $options['debug'])
     {
-      foreach ($lessHelper->getDebugInfo() as $key => $value)
+      foreach ($less->getConfig()->getDebugInfo() as $key => $value)
       {
         $this->logSection('debug', sprintf("%s:\t%s", $key, $value), null, 'INFO');
       }
     }
 
     // Compiles LESS files
-    foreach (sfLESS::findLessFiles() as $lessFile)
+    foreach ($less->findLessFiles() as $lessFile)
     {
       if (!isset($arguments['file']) || (false !== strpos($lessFile, $arguments['file'] . '.less')))
       {
-        if ($lessHelper->compile($lessFile))
+        if ($less->compile($lessFile))
         {
           if (isset($options['debug']) && $options['debug'])
           {
             $this->logSection('compiled', sprintf("%s => %s",
-              sfLESS::getProjectRelativePath($lessFile),
-              sfLESS::getProjectRelativePath(sfLESS::getCssPathOfLess($lessFile))
+              sfLESSUtils::getProjectRelativePath($lessFile),
+              sfLESSUtils::getProjectRelativePath($less->getCssPathOfLess($lessFile))
             ), null, 'COMMAND');
           }
           else
           {
             $this->logSection(
-              'compiled', str_replace(sfLESS::getLessPaths(), '', $lessFile), null, 'COMMAND'
+              'compiled',
+              str_replace($less->getConfig()->getLessPaths(), '', $lessFile),
+              null,
+              'COMMAND'
             );
           }
         }
