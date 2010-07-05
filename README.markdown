@@ -41,10 +41,14 @@ and enable plugin in your ProjectConfigurations class.
 
 ## Usage ##
 
+### Prepare ###
+
 After installation, you need to create directory `web/less`. Any LESS file placed in this directory, including subdirectories, will
 automatically be parsed through LESS and saved as a corresponding CSS file in `web/css`. Example:
 
 	web/less/clients/screen.less => web/css/clients/screen.css
+
+### Style partials ###
 
 If you prefix a file with an underscore, it is considered to be a partial, and will not be parsed unless included in another file. Example:
 
@@ -65,41 +69,41 @@ sfLESSPlugin can use 2 workflows to manage your *.less files:
 1. Compile on browser side by `less.js`;
 2. Compile on server side by `lessc`.
 
-### Update your layout files ###
+### prepare: Update layout ###
 
-Update your layout php files (at least the ones using less stylesheets):
+For both flows, you need to update your layout files (at least the ones using less stylesheets):
 
 * include the less css helper:
 
-		<?php use_helper('LessCss'); ?>
+	<?php use_helper('LESS'); ?>
 
 * update the way stylesheets are included by changing `<?php include_stylesheets() ?>` for `<?php include_less_stylesheets() ?>`
 
-### Compile on browser side ###
+### 1st way: Compile on browser side ###
 
-This is default plugin behaviour. In this behaviour, all stylesheets ending with `.less`, added:
+This is default plugin behaviour. In this behaviour, all stylesheets ending with `.less`, added in:
 
-* in your `view.yml` configs:
+* your `view.yml` configs:
 
-		stylesheets:      [header/main.less]
-  
-* in a template view file:
+	stylesheets:      [header/main.less]
 
-		<?php use_stylesheet('header/main.less') ?>
+* a template view file:
 
-In this case, it will be automatically changed from something like
+	<?php use_stylesheet('header/main.less') ?>
+
+In this case, it will be automatically changed from something like:
 
 	<link href="/css/header/main.less" media="screen" rel="stylesheet" type="text/css" />
 
-to
+to link like:
 
 	<link href="/less/header/main.less" media="screen" rel="stylesheet/less" type="text/css" />
 
 and will add link to `less.js` into javascripts list.
 
-This will cause browser to parse your linked less files on the fly.
+This will cause browser to parse your linked less files on the fly through `less.js`.
 
-### Compile on server side ###
+### 2nd way: Compile on server side ###
 
 In details, sfLESSPlugin server side compiler does the following:
 
@@ -109,18 +113,24 @@ In details, sfLESSPlugin server side compiler does the following:
 
 You have to install 2 packages:
 
-1. `node.js`;
-2. `less.js`.
+1. `node.js` - server side interp., based on Google V8 JS engine;
+2. `less.js` - `LESS2`. You can install this with Node Package Manager (`npm install less`).
 
 After that, enable server behavior & disable browser behavior in `app.yml`:
 
 	sf_less_plugin:
-	  compile:  true
-	  use_js:   false
+	  compile:              true
+	  use_js:               false
 
 In this case, sfLESSPlugin will try to find all your less files inside `web/less/*.less` & compile them into `web/css/*.css`, so you can link your less styles as default css stylesheets:
 
-	stylesheets:      [main.css]
+	stylesheets:            [main.css]
+
+or (best way) with:
+
+	stylesheets:            [main.less]
+
+so `include_less_stylesheets` helper will automatically change `.less` extension to `.css`, but you still will have ability to change compiler type (server side <-> browser side) on the fly with single change in `app.yml`
 
 ## Configuration ##
 
@@ -128,16 +138,16 @@ sfLESSPlugin server side compiler rechecks `web/less/*.less` at every routes ini
 
 	prod:
 	  sf_less_plugin:
-	    compile:  false
+	    compile:            false
 
 sfLESSPlugin server side compiler checks the dates of LESS & CSS files, and will by default compile again only if LESS file have been changed since last parsing .
 
-When you use `@import` statements in your LESS files, you should also turn on dependencies checking in one of you app.yml:
+When you use `@import` statements in your LESS files to include partials (styles with `_` prefix), you should also turn on dependencies checking (because, less compiler will not rerun on partials change) in one of you app.yml:
 
-    dev:
-      sf_less_plugin:
-        check_dates:        true
-        check_dependencies: true
+	dev:
+	  sf_less_plugin:
+	    check_dates:        true
+	    check_dependencies: true
 
 **warning:** Checking for the dependencies will affect performances and should not be turned on in production
 
@@ -145,15 +155,15 @@ The safest (but probably slowest) option is to enforce everytime compiling:
 
 	dev:
 	  sf_less_plugin:
-	    check_dates:	false
+	    check_dates:        false
 
-Also, sfLESSPlugin server side compiler has Web Debug Panel, from which you can view all styles to compile & can open them for edit in prefered editor. For that you need to configure sf_file_link_format in settings.yml.
+Also, sfLESSPlugin server side compiler has Web Debug Panel, from which you can view all styles to compile & can open them for edit in prefered editor. For that you need to configure `sf_file_link_format` in `settings.yml`.
 
 Last but not least, you can enable CSS compression (remove of whitespaces, tabs & newlines) in server side compiler with:
 
 	all:
 	  sf_less_plugin:
-	    use_compression:	true
+	    use_compression:    true
 
 ## Tasks ##
 
@@ -191,6 +201,7 @@ less.js is maintained by Alexis Sellier [http://github.com/cloudhead](http://git
 
 ### github latest ###
 
+* updated readme & some refactorings
 * dependency check improvements
 
 ### v1.1.0 released on 2010-07-01 ###
