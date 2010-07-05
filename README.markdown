@@ -189,6 +189,10 @@ less.js is maintained by Alexis Sellier [http://github.com/cloudhead](http://git
 
 ## History ##
 
+### github latest ###
+
+* dependency check improvements
+
 ### v1.1.0 released on 2010-07-01 ###
 
 * added an helper to include less stylesheets in layouts / templates
