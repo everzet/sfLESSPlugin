@@ -105,6 +105,16 @@ class LESSConfig
   }
 
   /**
+   * Returns path to the less.js file
+   *
+   * @return  string  a path to the less.js file
+   */
+  public function getLessJsPath()
+  {
+    return '/sfLESSPlugin/js/less-1.0.31.min.js';
+  }
+
+  /**
    * Returns debug info of the current state
    *
    * @return  array state

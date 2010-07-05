@@ -49,4 +49,12 @@ class sfLESSConfig extends LESSConfig
   {
     return sfLESSUtils::getSepFixedPath(sfConfig::get('sf_web_dir')) . '/less/';
   }
+
+  /**
+   * @see LESSConfig
+   */
+  public function getLessJsPath()
+  {
+    return sfConfig::get('app_sf_less_plugin_js_lib', parent::getLessJsPath());
+  }
 }

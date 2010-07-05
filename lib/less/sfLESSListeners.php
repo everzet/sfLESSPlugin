@@ -60,9 +60,8 @@ class sfLESSListeners
       }
       else
       {
-        $response->addJavascript(
-          sfConfig::get('app_sf_less_plugin_js_lib', '/sfLESSPlugin/js/less-1.0.31.min.js')
-        );
+        $config = new sfLESSConfig();
+        $response->addJavascript($config->getLessJsPath());
       }
     }
   }
@@ -78,7 +77,7 @@ class sfLESSListeners
     $timer = sfTimerManager::getTimer('Less compilation');
 
     // Create config manager
-    $config = new sfLESSConfig;
+    $config = new sfLESSConfig();
 
     // Create new helper object & compile LESS stylesheets with it
     $less = new sfLESS($config);
