@@ -101,8 +101,8 @@ EOF;
           if (isset($options['debug']) && $options['debug'])
           {
             $this->logSection('compiled', sprintf("%s => %s",
-              sfLESS::getProjectRelativePath($lessFile),
-              sfLESS::getProjectRelativePath(sfLESS::getCssPathOfLess($lessFile))
+              sfLESSUtils::getProjectRelativePath($lessFile),
+              sfLESSUtils::getProjectRelativePath(sfLESS::getCssPathOfLess($lessFile))
             ), null, 'COMMAND');
           }
           else

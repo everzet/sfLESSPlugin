@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the sfLESSPlugin.
  * (c) 2010 Konstantin Kudryashov <ever.zet@gmail.com>
@@ -28,8 +29,8 @@ class sfLESSDependency
   protected $check = false;
 
   /**
-   * @param string $path Base path (web root folder)
-   * @param boolean $check Whether to check for dependency
+   * @param   string  $path   Base path (web root folder)
+   * @param   boolean $check  Whether to check for dependency
    */
   public function __construct($path, $check)
   {
@@ -47,8 +48,9 @@ class sfLESSDependency
   /**
    * Return the modification time of the file (optionally including its dependency)
    *
-   * @param string $file Filename
-   * @return integer|false The time the files was last modified (unix timestamp)
+   * @param   string          $file   Filename
+   * 
+   * @return  integer|boolean         The time the files was last modified (unix timestamp)
    */
   public function getMtime($lessFile)
   {
@@ -72,9 +74,10 @@ class sfLESSDependency
   /**
    * Compute the dependencies of the file
    *
-   * @param file $lessFile A less file
-   * @param array $deps An array of pre-existing dependencies
-   * @return array The updated array of dependencies
+   * @param   file  $lessFile A less file
+   * @param   array $deps     An array of pre-existing dependencies
+   * 
+   * @return  array           The updated array of dependencies
    */
   protected function computeDependencies($lessFile, array $deps)
   {
