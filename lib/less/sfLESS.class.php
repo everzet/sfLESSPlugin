@@ -120,7 +120,7 @@ class sfLESS
    * 
    * @return  string            CSS file path
    */
-  static public function getCssPathOfLess($lessFile)
+  public function getCssPathOfLess($lessFile)
   {
     return str_replace(
       array($this->config->getLessPaths(), '.less'),

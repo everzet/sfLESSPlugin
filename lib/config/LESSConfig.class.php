@@ -16,7 +16,7 @@
  * @author     Konstantin Kudryashov <ever.zet@gmail.com>
  * @version    1.0.0
  */
-class sfLESSConfig
+class LESSConfig
 {
   /**
    * Do we need to check dates before compile
