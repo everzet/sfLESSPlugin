@@ -122,11 +122,9 @@ class sfLESS
    */
   public function getCssPathOfLess($lessFile)
   {
-    return str_replace(
-      array($this->config->getLessPaths(), '.less'),
-      array($this->config->getCssPaths(), '.css'),
-      $lessFile
-    );
+    $file = preg_replace('/\.less$/', '.css', $lessFile);
+    $file = preg_replace(sprintf('/^%s/', preg_quote($this->config->getLessPaths(), '/')), $this->config->getCssPaths(), $file);
+    return $file;
   }
 
   /**
