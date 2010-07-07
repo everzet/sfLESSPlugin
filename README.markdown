@@ -75,7 +75,7 @@ For both flows, you need to update your layout files (at least the ones using le
 
 * include the less css helper:
 
-	<?php use_helper('LESS'); ?>
+		<?php use_helper('LESS'); ?>
 
 * update the way stylesheets are included by changing `<?php include_stylesheets() ?>` for `<?php include_less_stylesheets() ?>`
 
@@ -85,11 +85,11 @@ This is default plugin behaviour. In this behaviour, all stylesheets ending with
 
 * your `view.yml` configs:
 
-	stylesheets:      [header/main.less]
+		stylesheets:      [header/main.less]
 
 * a template view file:
 
-	<?php use_stylesheet('header/main.less') ?>
+		<?php use_stylesheet('header/main.less') ?>
 
 In this case, it will be automatically changed from something like:
 
