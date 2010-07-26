@@ -32,9 +32,8 @@ function get_less_stylesheets()
 {
   $response = sfContext::getInstance()->getResponse();
 
-  sfLESSListeners::findAndFixContentLinks(
-    $response, sfConfig::get('app_sf_less_plugin_use_js', false)
-  );
+  $dispatcher = sfContext::getInstance()->getEventDispatcher();
+  $dispatcher->notify(new sfEvent($response, 'less_js.compile'));
 
   return get_stylesheets();
 }

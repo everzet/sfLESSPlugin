@@ -33,6 +33,14 @@ class LESSConfig
   protected $useCompression;
 
   /**
+   * Client side compilation
+   *
+   * @var boolean
+   */
+  protected $compileClientSide = false;
+
+
+  /**
    * Creates config instance
    *
    * @param   boolean   $checkDates     whether we check dates before compile
@@ -112,6 +120,24 @@ class LESSConfig
   public function getLessJsPath()
   {
     return '/sfLESSPlugin/js/less-1.0.31.min.js';
+  }
+
+  /**
+   * @return  boolean  Wether to compile on the client side
+   */
+  public function isClientSideCompilation()
+  {
+    return $this->compileClientSide;
+  }
+
+  /**
+   * Enable the client side compilation
+   *
+   * @param   boolean $clientSide Wether to compile on the client side
+   */
+  public function setIsClientSideCompilation($clientSide)
+  {
+    $this->compileClientSide = $clientSide;
   }
 
   /**
