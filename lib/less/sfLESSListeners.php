@@ -21,13 +21,14 @@ class sfLESSListeners
   /**
    * Update the response by fixing less stylesheet path and adding the less js engine when required
    *
-   * @param   sfWebResponse $response The response that will be sent back to the browser
-   * @param   boolean       $useJs    Wether the less stylesheets should be processed by the js on the client side
+   * @param   sfEvent       $event    An sfEvent instance
    */
-  static public function findAndFixContentLinks(sfWebResponse $response, $useJs)
+  static public function findAndFixContentLinks(sfEvent $event)
   {
+    $response = $event->getSubject();
+    $config = new sfLESSConfig();
     $hasLess  = false;
-
+    
     foreach ($response->getStylesheets() as $file => $options)
     {
       if (
@@ -36,7 +37,7 @@ class sfLESSListeners
          )
       {
         $response->removeStylesheet($file);
-        if ($useJs)
+        if ($config->isClientSideCompilation())
         {
           $response->addStylesheet(
             '/less/' . $file, '', array_merge($options, array('rel' => 'stylesheet/less'))
@@ -59,8 +60,7 @@ class sfLESSListeners
         );
       }
       else
-      {
-        $config = new sfLESSConfig();
+      {        
         $response->addJavascript($config->getLessJsPath());
       }
     }

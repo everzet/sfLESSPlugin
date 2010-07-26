@@ -42,5 +42,10 @@ class sfLESSPluginConfiguration extends sfPluginConfiguration
         ));
       }
     }
+
+    $this->dispatcher->connect(
+      'less_js.compile',
+      array('sfLESSListeners', 'findAndFixContentLinks')
+    );
   }
 }

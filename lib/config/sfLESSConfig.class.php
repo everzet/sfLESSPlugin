@@ -57,4 +57,12 @@ class sfLESSConfig extends LESSConfig
   {
     return sfConfig::get('app_sf_less_plugin_js_lib', parent::getLessJsPath());
   }
+
+  /**
+   * @see LESSConfig
+   */
+  public function isClientSideCompilation()
+  {
+    sfConfig::get('app_sf_less_plugin_use_js', parent::isClientSideCompilation());
+  }
 }
