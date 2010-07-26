@@ -203,7 +203,7 @@ less.js is maintained by Alexis Sellier [http://github.com/cloudhead](http://git
 
 * updated readme & some refactorings
 * dependency check improvements
-* [client side] less.js updated to version 1.0.31
+* [client side] less.js updated to version 1.0.33
 
 ### v1.1.0 released on 2010-07-01 ###
 
