@@ -44,16 +44,19 @@ class sfLESS
    *
    * @var LESSConfig
    */
-  protected $config;
+  protected static $config;
 
   /**
    * Constructor
    *
    * @param   LESSConfig  $config   configuration manager
    */
-  public function __construct(LESSConfig $config)
+  public function __construct(LESSConfig $config = null)
   {
-    $this->config = $config;
+    if ($config)
+    {
+      self::$config = $config;
+    }
   }
 
   /**
@@ -61,9 +64,10 @@ class sfLESS
    *
    * @return  LESSConfig  configurator instance
    */
-  public function getConfig()
+  public static function getConfig()
   {
-    return $this->config;
+    self::$config = self::$config?self::$config:new sfLESSConfig();
+    return self::$config;
   }
 
   /**
@@ -96,7 +100,7 @@ class sfLESS
     return sfFinder::type('file')
       ->exec(array('sfLESSUtils', 'isCssLessCompiled'))
       ->name('*.css')
-      ->in($this->config->getCssPaths());
+      ->in(self::getConfig()->getCssPaths());
   }
 
   /**
@@ -110,7 +114,7 @@ class sfLESS
       ->name('*.less')
       ->discard('_*')
       ->follow_link()
-      ->in($this->config->getLessPaths());
+      ->in(self::getConfig()->getLessPaths());
   }
 
   /**
@@ -123,7 +127,7 @@ class sfLESS
   public function getCssPathOfLess($lessFile)
   {
     $file = preg_replace('/\.less$/', '.css', $lessFile);
-    $file = preg_replace(sprintf('/^%s/', preg_quote($this->config->getLessPaths(), '/')), $this->config->getCssPaths(), $file);
+    $file = preg_replace(sprintf('/^%s/', preg_quote(self::getConfig()->getLessPaths(), '/')), self::getConfig()->getCssPaths(), $file);
     return $file;
   }
 
@@ -148,7 +152,7 @@ class sfLESS
     $isCompiled = false;
 
     // If we check dates - recompile only really old CSS
-    if ($this->config->isCheckDates())
+    if (self::getConfig()->isCheckDates())
     {
       try
       {
@@ -206,7 +210,7 @@ class sfLESS
     }
 
     // Compress CSS if we use compression
-    if ($this->config->isUseCompression())
+    if (self::getConfig()->isUseCompression())
     {
       $buffer = sfLESSUtils::getCompressedCss($buffer);
     }

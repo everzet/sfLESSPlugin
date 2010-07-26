@@ -89,7 +89,7 @@ class sfWebDebugPanelLESS extends sfWebDebugPanel
   protected function getConfigurationContent()
   {
     $debugInfo = '<dl id="less_debug" style="display: none;">';
-    $this->config = new sfLESSConfig;
+    $this->config = sfLESS::getConfig();
     foreach ($this->config->getDebugInfo() as $name => $value)
     {
       $debugInfo .= sprintf('<dt style="float:left; width: 100px"><strong>%s:</strong></dt>

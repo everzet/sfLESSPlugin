@@ -19,6 +19,7 @@
 class sfLESSListeners
 {
   /**
+   * Listens to the less_js.compile event.
    * Update the response by fixing less stylesheet path and adding the less js engine when required
    *
    * @param   sfEvent       $event    An sfEvent instance
@@ -26,7 +27,6 @@ class sfLESSListeners
   static public function findAndFixContentLinks(sfEvent $event)
   {
     $response = $event->getSubject();
-    $config = new sfLESSConfig();
     $hasLess  = false;
     
     foreach ($response->getStylesheets() as $file => $options)
@@ -37,7 +37,7 @@ class sfLESSListeners
          )
       {
         $response->removeStylesheet($file);
-        if ($config->isClientSideCompilation())
+        if (sfLESS::getConfig()->isClientSideCompilation())
         {
           $response->addStylesheet(
             '/less/' . $file, '', array_merge($options, array('type' => 'text/less'))
@@ -61,7 +61,7 @@ class sfLESSListeners
       }
       else
       {        
-        $response->addJavascript($config->getLessJsPath());
+        $response->addJavascript(sfLESS::getConfig()->getLessJsPath());
       }
     }
   }
@@ -76,11 +76,8 @@ class sfLESSListeners
     // Start compilation timer for debug info
     $timer = sfTimerManager::getTimer('Less compilation');
 
-    // Create config manager
-    $config = new sfLESSConfig();
-
     // Create new helper object & compile LESS stylesheets with it
-    $less = new sfLESS($config);
+    $less = new sfLESS();
     foreach ($less->findLessFiles() as $lessFile)
     {
       $less->compile($lessFile);

@@ -81,7 +81,7 @@ EOF;
           unlink($cssFile);
           $this->logSection(
             'removed',
-            str_replace($less->getConfig()->getCssPaths(), '', $cssFile)
+            str_replace($less::getConfig()->getCssPaths(), '', $cssFile)
           );
         }
       }
@@ -90,7 +90,7 @@ EOF;
     // Outputs debug info
     if (isset($options['debug']) && $options['debug'])
     {
-      foreach ($less->getConfig()->getDebugInfo() as $key => $value)
+      foreach ($less::getConfig()->getDebugInfo() as $key => $value)
       {
         $this->logSection('debug', sprintf("%s:\t%s", $key, $value), null, 'INFO');
       }
@@ -114,7 +114,7 @@ EOF;
           {
             $this->logSection(
               'compiled',
-              str_replace($less->getConfig()->getLessPaths(), '', $lessFile),
+              str_replace($less::getConfig()->getLessPaths(), '', $lessFile),
               null,
               'COMMAND'
             );
