@@ -119,7 +119,7 @@ class LESSConfig
    */
   public function getLessJsPath()
   {
-    return '/sfLESSPlugin/js/less-1.0.31.min.js';
+    return '/js/less.min.js';
   }
 
   /**
