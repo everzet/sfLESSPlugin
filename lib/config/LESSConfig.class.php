@@ -37,8 +37,7 @@ class LESSConfig
    *
    * @var boolean
    */
-  protected $compileClientSide = false;
-
+  protected $compileClientSide = true;
 
   /**
    * Creates config instance
@@ -119,7 +118,7 @@ class LESSConfig
    */
   public function getLessJsPath()
   {
-    return '/js/less.min.js';
+    return '/sfLESSPlugin/js/less-1.0.33.min.js';
   }
 
   /**
