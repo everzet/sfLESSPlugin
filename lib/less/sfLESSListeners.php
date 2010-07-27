@@ -33,14 +33,14 @@ class sfLESSListeners
     {
       if (
            '.less' === substr($file, -5) && 
-           (!isset($options['rel']) || 'stylesheet/less' !== $options['rel'])
+           (!isset($options['type']) || 'text/less' !== $options['type'])
          )
       {
         $response->removeStylesheet($file);
         if ($config->isClientSideCompilation())
         {
           $response->addStylesheet(
-            '/less/' . $file, '', array_merge($options, array('rel' => 'stylesheet/less'))
+            '/less/' . $file, '', array_merge($options, array('type' => 'text/less'))
           );
           $hasLess = true;
         }
