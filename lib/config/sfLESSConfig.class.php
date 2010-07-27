@@ -55,7 +55,7 @@ class sfLESSConfig extends LESSConfig
    */
   public function getLessJsPath()
   {
-    return sfConfig::get('app_sf_less_plugin_js_lib', '/sfLESSPlugin/js/less-1.0.33.min.js');
+    return sfConfig::get('app_sf_less_plugin_js_lib', parent::getLessJsPath());
   }
 
   /**
