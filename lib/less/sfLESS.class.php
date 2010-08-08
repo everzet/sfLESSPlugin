@@ -145,32 +145,37 @@ class sfLESS
 
     // Gets CSS file path
     $cssFile = $this->getCssPathOfLess($lessFile);
-
     sfLESSUtils::createFolderIfNeeded($cssFile);
 
-    // Is file compiled
     $isCompiled = false;
 
     // If we check dates - recompile only really old CSS
     if (self::getConfig()->isCheckDates())
-    {
+    {      
       try
       {
         $d = new sfLESSDependency(sfConfig::get('sf_web_dir'),
           sfConfig::get('app_sf_less_plugin_check_dependencies', false));
-        if (!is_file($cssFile) || $d->getMtime($lessFile) > filemtime($cssFile))
-        {
-          $isCompiled = $this->callCompiler($lessFile, $cssFile);
-        }
+        $shouldCompile = !is_file($cssFile) || $d->getMtime($lessFile) > filemtime($cssFile);
       }
       catch (Exception $e)
       {
-        $isCompiled = false;
+        $shouldCompile = false;
       }
     }
     else
     {
-      $isCompiled = $this->callCompiler($lessFile, $cssFile);
+      $shouldCompile = true;
+    }
+
+    if ($shouldCompile)
+    {
+      $buffer = $this->callLesscCompiler($lessFile, $cssFile);
+      if ($buffer !== false)
+      {
+        $isCompiled = true;
+        $this->writeCssFile($cssFile, $buffer);
+      }
     }
 
     // Adds debug info to debug array
@@ -185,30 +190,15 @@ class sfLESS
   }
 
   /**
-   * Calls current LESS compiler for single file
+   * Write the CSS content to a file
    *
-   * @param   string  $lessFile a LESS file
    * @param   string  $cssFile  a CSS file
-   * 
-   * @return  boolean           true if succesfully compiled & false in other way
+   * @param   string  $buffer   the css content
+   *
+   * @return  boolean           true if succesfully written & false in other way
    */
-  public function callCompiler($lessFile, $cssFile)
+  public function writeCssFile($cssFile, $buffer)
   {
-    // Setting current file. We will output this var if compiler throws error
-    $this->currentFile = $lessFile;
-
-    // Do not try to change the permission of an existing file which we might not own
-    $setPermission = !is_file($cssFile);
-
-    // Call compiler
-    $buffer = $this->callLesscCompiler($lessFile, $cssFile);
-
-    // Checks if compiler returns false
-    if (false === $buffer)
-    {
-      return $buffer;
-    }
-
     // Compress CSS if we use compression
     if (self::getConfig()->isUseCompression())
     {
@@ -216,18 +206,15 @@ class sfLESS
     }
 
     // Add compiler header to CSS & writes it to file
-    file_put_contents($cssFile, sfLESSUtils::getCssHeader() . "\n\n" . $buffer);
+    $status = file_put_contents($cssFile, sfLESSUtils::getCssHeader() . "\n\n" . $buffer);
 
-    if ($setPermission)
+    if ($status !== false && fileowner($cssFile) == posix_geteuid())
     {
-      // Set permissions for fresh files only
+      // Only attempt to chmod files we own
       chmod($cssFile, 0666);
     }
 
-    // Setting current file to null
-    $this->currentFile = null;
-
-    return true;
+    return $status;
   }
 
   /**
@@ -240,6 +227,9 @@ class sfLESS
    */
   public function callLesscCompiler($lessFile, $cssFile)
   {
+    // Setting current file. We will output this var if compiler throws error
+    $this->currentFile = $lessFile;
+
     // Compile with lessc
     $fs = new sfFilesystem;
     $command = sprintf('lessc "%s" "%s"', $lessFile, $cssFile);
@@ -260,6 +250,9 @@ class sfLESS
       $fs->sh($command);
     }
 
+    // Setting current file to null
+    $this->currentFile = null;
+    
     return file_get_contents($cssFile);
   }
 
