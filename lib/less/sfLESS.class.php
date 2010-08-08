@@ -147,6 +147,7 @@ class sfLESS
     $cssFile = $this->getCssPathOfLess($lessFile);
     sfLESSUtils::createFolderIfNeeded($cssFile);
 
+    // Is file compiled
     $isCompiled = false;
 
     // If we check dates - recompile only really old CSS

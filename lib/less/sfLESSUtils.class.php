@@ -207,5 +207,4 @@ class sfLESSUtils
     }
     return join("\n", $output);
   }
-
 }
