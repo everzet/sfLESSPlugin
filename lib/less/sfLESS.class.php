@@ -173,8 +173,7 @@ class sfLESS
       $buffer = $this->callLesscCompiler($lessFile, $cssFile);
       if ($buffer !== false)
       {
-        $isCompiled = true;
-        $this->writeCssFile($cssFile, $buffer);
+        $isCompiled = $this->writeCssFile($cssFile, $buffer) !== false;        
       }
     }
 
