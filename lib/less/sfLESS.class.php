@@ -142,13 +142,7 @@ class sfLESS
     // Gets CSS file path
     $cssFile = $this->getCssPathOfLess($lessFile);
 
-    // Checks if path exists & create if not
-    if (!is_dir(dirname($cssFile)))
-    {
-      mkdir(dirname($cssFile), 0777, true);
-      // PHP workaround to fix nested folders
-      chmod(dirname($cssFile), 0777);
-    }
+    sfLESSUtils::createFolderIfNeeded($cssFile);
 
     // Is file compiled
     $isCompiled = false;

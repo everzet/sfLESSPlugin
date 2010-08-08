@@ -124,4 +124,21 @@ class sfLESSUtils
   {
     return '/* This CSS is autocompiled by LESS parser. Don\'t edit it manually. */';
   }
+
+  /**
+   * Create the file's folder when it does not exist
+   *
+   * @param   string  $file  The file absolute path
+   */
+  static public function createFolderIfNeeded($file)
+  {
+    // Checks if path exists & create if not
+    if (!is_dir(dirname($file)))
+    {
+      mkdir(dirname($file), 0777, true);
+      // PHP workaround to fix nested folders
+      chmod(dirname($file), 0777);
+    }
+  }
+  
 }
