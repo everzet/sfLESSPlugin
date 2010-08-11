@@ -140,5 +140,72 @@ class sfLESSUtils
       chmod(dirname($file), 0777);
     }
   }
-  
+
+  /**
+   * Remove duplicate lines introduce by a flaw in the current less compiler.
+   * The CSS format is assumed to be non compressed lessc output
+   *
+   * @see http://github.com/cloudhead/less.js/issues#issue/49
+   *
+   * @param   string  $css  CSS to be fixed
+   *
+   * @return  string        fixed CSS
+   */
+  static public function  fixDuplicateLines($css)
+  {
+    $directives = array();
+    $inBlock = false;
+    $inComment = false;
+    $output = array();
+
+    preg_match_all('/.+/', $css, $lines);
+    foreach ($lines[0] as $line)
+    {
+      $active = '';
+      if (!$inComment)
+      {
+        $inComment = preg_match("#/\*#", $line);
+        $active = preg_replace("#/\*.*#", '', $line);
+      }
+
+      if ($inComment)
+      {
+        if (preg_match("#\*/#", $line))
+        {
+          $inComment = false;
+          $active .= preg_replace("#.*?\*/#", '', $line);
+        }        
+      }
+
+      if (!$inBlock)
+      {
+        $output[] = $line;
+
+        if (preg_match('/{/', $active))
+        {
+          $inBlock = true;
+          $directives = array();
+        }
+      }
+      else
+      {
+        if ($inComment)
+        {
+          $output[] = $line;
+        }
+        elseif (!in_array($line, $directives))
+        {
+          $output[] = $line;
+          $directives[] = $line;
+        }
+
+        if (preg_match('/}/', $active))
+        {
+          $inBlock = false;
+        }
+      }
+    }
+    return join("\n", $output);
+  }
+
 }

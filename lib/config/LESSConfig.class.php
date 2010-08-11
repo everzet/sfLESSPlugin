@@ -40,6 +40,15 @@ class LESSConfig
   protected $compileClientSide = true;
 
   /**
+   * Fix duplicate lines
+   *
+   * @see http://github.com/cloudhead/less.js/issues#issue/49
+   *
+   * @var boolean
+   */
+  protected $fixDuplicate = false;
+
+  /**
    * Creates config instance
    *
    * @param   boolean   $checkDates     whether we check dates before compile
@@ -140,6 +149,24 @@ class LESSConfig
   }
 
   /**
+   * @return  boolean  Wether to fix duplicate lines
+   */
+  public function getFixDuplicate()
+  {
+    return $this->fixDuplicate;
+  }
+
+  /**
+   * Enable fixing of duplicate lines
+   *
+   * @param   boolean $clientSide Wether to fix duplicate line
+   */
+  public function setFixDuplicate($fix)
+  {
+    $this->fixDuplicate = $fix;
+  }
+
+  /**
    * Returns debug info of the current state
    *
    * @return  array state
@@ -153,4 +180,5 @@ class LESSConfig
       'css'         => $this->getCssPaths()
     );
   }
+
 }

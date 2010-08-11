@@ -198,6 +198,12 @@ class sfLESS
    */
   public function writeCssFile($cssFile, $buffer)
   {
+    // Fix duplicate lines
+    if (self::getConfig()->getFixDuplicate())
+    {
+      $buffer = sfLESSUtils::fixDuplicateLines($buffer);
+    }
+
     // Compress CSS if we use compression
     if (self::getConfig()->isUseCompression())
     {

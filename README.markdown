@@ -165,6 +165,12 @@ Last but not least, you can enable CSS compression (remove of whitespaces, tabs 
 	  sf_less_plugin:
 	    use_compression:    true
 
+In order to workaround [a flaw in the less compiler](http://github.com/cloudhead/less.js/issues#issue/49) you can use the following option:
+
+	all:
+	  sf_less_plugin:
+	    fix_duplicate:      true
+
 ## Tasks ##
 
 sfLESSPlugin server side compiler provides a set of CLI tasks to help compiling your LESS styles.

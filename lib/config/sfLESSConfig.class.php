@@ -65,4 +65,12 @@ class sfLESSConfig extends LESSConfig
   {
     return sfConfig::get('app_sf_less_plugin_use_js', parent::isClientSideCompilation());
   }
+
+  /**
+   * @see  LESSConfig
+   */
+  public function getFixDuplicate()
+  {
+    return sfConfig::get('app_sf_less_plugin_fix_duplicate', parent::getFixDuplicate());
+  }
 }
