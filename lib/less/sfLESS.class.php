@@ -214,7 +214,7 @@ class sfLESS
     // Add compiler header to CSS & writes it to file
     $status = file_put_contents($cssFile, sfLESSUtils::getCssHeader() . "\n\n" . $buffer);
 
-    if ($status !== false && fileowner($cssFile) == posix_geteuid())
+    if ('\\' != DIRECTORY_SEPARATOR && $status !== false && fileowner($cssFile) == posix_geteuid())
     {
       // Only attempt to chmod files we own
       chmod($cssFile, 0666);
