@@ -106,7 +106,7 @@ class LESSConfig
    * @return  string  a path to CSS files directory
    */
   public function getCssPaths()
-  {  
+  {
     return 'web/css/';
   }
 
@@ -127,7 +127,7 @@ class LESSConfig
    */
   public function getLessJsPath()
   {
-    return '/sfLESSPlugin/js/less-1.0.33.min.js';
+    return '/sfLESSPlugin/js/less-1.1.3.min.js';
   }
 
   /**
