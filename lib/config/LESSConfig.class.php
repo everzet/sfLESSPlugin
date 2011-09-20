@@ -49,6 +49,13 @@ class LESSConfig
   protected $fixDuplicate = false;
 
   /**
+   * Use lessphp for client-side compilation.
+   *
+   * @var boolean
+   */
+  protected $useLessphp = false;
+  
+  /**
    * Creates config instance
    *
    * @param   boolean   $checkDates     whether we check dates before compile
@@ -136,6 +143,14 @@ class LESSConfig
   public function isClientSideCompilation()
   {
     return $this->compileClientSide;
+  }
+
+  /**
+   * @return boolean 	Whether to use lessphp for client side compilation
+   */
+  public function isUseLessphp()
+  {
+    return $this->useLessphp;
   }
 
   /**
