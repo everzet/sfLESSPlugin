@@ -38,7 +38,7 @@ class sfLESSConfig extends LESSConfig
    * @see LESSConfig
    */
   public function getCssPaths()
-  {  
+  {
     return sfLESSUtils::getSepFixedPath(sfConfig::get('sf_web_dir')) . '/css/';
   }
 
@@ -64,6 +64,14 @@ class sfLESSConfig extends LESSConfig
   public function isClientSideCompilation()
   {
     return sfConfig::get('app_sf_less_plugin_use_js', parent::isClientSideCompilation());
+  }
+
+  /**
+   * @see LESSConfig
+   */
+  public function isUseLessphp()
+  {
+    return sfConfig::get('app_sf_less_plugin_use_lessphp', parent::isClientSideCompilation());
   }
 
   /**

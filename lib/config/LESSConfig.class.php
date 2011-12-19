@@ -49,6 +49,13 @@ class LESSConfig
   protected $fixDuplicate = false;
 
   /**
+   * Use lessphp for client-side compilation.
+   *
+   * @var boolean
+   */
+  protected $useLessphp = false;
+  
+  /**
    * Creates config instance
    *
    * @param   boolean   $checkDates     whether we check dates before compile
@@ -106,7 +113,7 @@ class LESSConfig
    * @return  string  a path to CSS files directory
    */
   public function getCssPaths()
-  {  
+  {
     return 'web/css/';
   }
 
@@ -127,7 +134,7 @@ class LESSConfig
    */
   public function getLessJsPath()
   {
-    return '/sfLESSPlugin/js/less-1.0.33.min.js';
+    return '/sfLESSPlugin/js/less-1.1.3.min.js';
   }
 
   /**
@@ -136,6 +143,14 @@ class LESSConfig
   public function isClientSideCompilation()
   {
     return $this->compileClientSide;
+  }
+
+  /**
+   * @return boolean 	Whether to use lessphp for client side compilation
+   */
+  public function isUseLessphp()
+  {
+    return $this->useLessphp;
   }
 
   /**

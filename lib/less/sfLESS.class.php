@@ -121,7 +121,7 @@ class sfLESS
    * Returns CSS file path by its LESS alternative
    *
    * @param   string  $lessFile LESS file path
-   * 
+   *
    * @return  string            CSS file path
    */
   public function getCssPathOfLess($lessFile)
@@ -135,7 +135,7 @@ class sfLESS
    * Compiles LESS file to CSS
    *
    * @param   string  $lessFile a LESS file
-   * 
+   *
    * @return  boolean           true if succesfully compiled & false in other way
    */
   public function compile($lessFile)
@@ -152,7 +152,7 @@ class sfLESS
 
     // If we check dates - recompile only really old CSS
     if (self::getConfig()->isCheckDates())
-    {      
+    {
       try
       {
         $d = new sfLESSDependency(sfConfig::get('sf_web_dir'),
@@ -174,7 +174,7 @@ class sfLESS
       $buffer = $this->callLesscCompiler($lessFile, $cssFile);
       if ($buffer !== false)
       {
-        $isCompiled = $this->writeCssFile($cssFile, $buffer) !== false;        
+        $isCompiled = $this->writeCssFile($cssFile, $buffer) !== false;
       }
     }
 
@@ -228,32 +228,41 @@ class sfLESS
    *
    * @param   string  $lessFile a LESS file
    * @param   string  $cssFile  a CSS file
-   * 
+   *
    * @return  string            output
    */
   public function callLesscCompiler($lessFile, $cssFile)
   {
     // Setting current file. We will output this var if compiler throws error
     $this->currentFile = $lessFile;
-
-    // Compile with lessc
-    $fs = new sfFilesystem;
-    $command = sprintf('lessc "%s" "%s"', $lessFile, $cssFile);
-
-    if ('1.3.0' <= SYMFONY_VERSION)
+		
+    if (self::getConfig()->isUseLessphp())
     {
-      try
-      {
-        $fs->execute($command, null, array($this, 'throwCompilerError'));
-      }
-      catch (RuntimeException $e)
-      {
-        return false;
-      }
+    	require_once(sfConfig::get('sf_lib_dir').'/vendor/lessc.inc.php');
+			$less = new lessc($lessFile);
+			file_put_contents($cssFile, $less->parse());
     }
     else
     {
-      $fs->sh($command);
+	    // Compile with lessc
+	    $fs = new sfFilesystem;
+	    $command = sprintf('lessc "%s" "%s"', $lessFile, $cssFile);
+	
+	    if ('1.3.0' <= SYMFONY_VERSION)
+	    {
+	      try
+	      {
+	        $fs->execute($command, null, array($this, 'throwCompilerError'));
+	      }
+	      catch (RuntimeException $e)
+	      {
+	        return false;
+	      }
+	    }
+	    else
+	    {
+	      $fs->sh($command);
+	    }
     }
 
     // Setting current file to null
@@ -261,7 +270,7 @@ class sfLESS
     
     return file_get_contents($cssFile);
   }
-
+  
   /**
    * Returns true if compiler can throw RuntimeException
    *
@@ -278,7 +287,7 @@ class sfLESS
    * Throws formatted compiler error
    *
    * @param   string  $line error line
-   * 
+   *
    * @return  boolean
    */
   public function throwCompilerError($line)
